@@ -33,9 +33,9 @@
         <docker.image.prefix>megmus</docker.image.prefix>
         <docker.name>springbootdocker</docker.name>
         <docker.push.tags>true</docker.push.tags>
-        <!-- Failsafe default values >
+        <!-- Failsafe default values -->
         <it.db.port>5432</it.db.port>
-        <it.app.port>8080</it.app.port-->
+        <it.app.port>8080</it.app.port>
 	</properties>
 
     <scm>
