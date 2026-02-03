@@ -5,7 +5,7 @@
 
 	<groupId>guru.springframework</groupId>
 	<artifactId>spring-boot-docker</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.7-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>spring-boot-docker</name>
@@ -14,14 +14,46 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.1.RELEASE</version>
+        <version>4.0.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
+        <project.version>0.0.7-SNAPSHOT</project.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.8</java.version>
+		<java.version>21</java.version>
+        <compiler.plugin.version>3.14.1</compiler.plugin.version>
+        <hibernate.version>7.2.0.Final</hibernate.version>
+        <jaxb.version>4.0.6</jaxb.version>
+        <lombok.version>1.18.36</lombok.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <surefire.version>3.5.2</surefire.version>
+        <junit.version>5.11.4</junit.version>
+
+        <docker.image.prefix>megmus</docker.image.prefix>
+        <docker.name>springbootdocker</docker.name>
+        <docker.push.tags>true</docker.push.tags>
+        <!-- Failsafe default values >
+        <it.db.port>5432</it.db.port>
+        <it.app.port>8080</it.app.port-->
 	</properties>
+
+    <scm>
+        <developerConnection>scm:git:https://github.com/megmost-stack/spring-boot-docker.git</developerConnection>
+        <url>https://github.com/megmost-stack/spring-boot-docker.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>local-nexus</id>
+            <url>http://localhost:8081/repository/mome-mvn-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>local-nexus</id>
+            <url>http://localhost:8081/repository/mome-mvn-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 	<dependencies>
 		<dependency>
@@ -44,16 +76,313 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency-->
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>${jaxb.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
 	</dependencies>
 	
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler.plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok-mapstruct-binding</artifactId>
+                            <version>0.2.0</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
 			</plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.5.4</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <!--suppress UnresolvedMavenProperty -->
+                        <it.app.port>${it.app.port}</it.app.port>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.48.0</version>
+                <executions>
+                    <execution>
+                        <id>docker-build</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>docker-push</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                        <configuration>
+                            <!--pushTags>true</pushTags-->
+                        </configuration>
+                    </execution>
+                    <!-- to create an image with the artifact for integration tests -->
+                    <!-- and to start and stop the tests container -->
+                    <execution>
+                        <id>start</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dockerHost>unix:///var/run/docker.sock</dockerHost>
+                    <verbose>true</verbose>
+                    <!-- log-settings -->
+                    <useColor>true</useColor>
+                    <logDate>default</logDate>
+                    <images>
+                        <image>
+                            <name>postgres:15</name>
+                            <alias>db</alias>
+                            <run>
+                                <env>
+                                    <POSTGRES_USER>admin</POSTGRES_USER>
+                                    <POSTGRES_PASSWORD>nimda</POSTGRES_PASSWORD>
+                                    <POSTGRES_DB>springuru</POSTGRES_DB>
+                                </env>
+                                <ports>
+                                    <port>5432:5432</port>
+                                </ports>
+                                <!--volumes>
+                                    <bind>
+                                        <volume>${project.basedir}/src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql</volume>
+                                    </bind>
+                                </volumes-->
+                                <wait>
+                                    <log>database system is ready to accept connections</log>
+                                    <time>20000</time>
+                                </wait>
+                            </run>
+                        </image>
+                        <image>
+                            <name>${docker.image.prefix}/${docker.name}</name>
+                            <build>
+                                <from>eclipse-temurin:21-jre</from>
+                                <assembly>
+                                    <descriptorRef>artifact</descriptorRef>
+                                </assembly>
+                                <!--dockerFileDir>${project.basedir}/src/main/docker/</dockerFileDir-->
+                                <entryPoint>
+                                    <shell>java -jar /maven/${project.build.finalName}.jar</shell>
+                                </entryPoint>
+                                <tags>
+                                    <tag>latest</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                                <ports>
+                                    <port>8080</port>
+                                </ports>
+                            </build>
+                            <run>
+                                <links>
+                                    <link>db</link>
+                                </links>
+                                <ports>
+                                    <port>8080:8080</port>
+                                </ports>
+                                <log>
+                                    <enabled>true</enabled>
+                                    <color>CYAN</color>
+                                    <prefix>SPRING</prefix>
+                                    <date>DEFAULT</date>
+                                </log>
+                                <!-- wait-Bedingung einbaust, die Maven so lange pausiert, bis dein Spring Boot im Container wirklich "Ready" ist (Health-Check) -->
+                                <wait>
+                                    <http>
+                                        <url>http://localhost:8080/actuator/health</url>
+                                        <!--method>GET</method>
+                                        <status>200</status-->
+                                    </http>
+                                    <time>30000</time>
+                                </wait>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.0.1</version>
+            </plugin>
 		</plugins>
 	</build>
-	
 
+    <profiles>
+        <profile>
+            <id>it</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <alias>db</alias>
+                                    <run>
+                                        <ports>
+                                            <port>it.db.port:5432</port>
+                                        </ports>
+                                    </run>
+                                </image>
+                                <image>
+                                    <name>${docker.image.prefix}/${docker.name}</name>
+                                    <run>
+                                        <ports>
+                                            <port>it.app.port:8080</port>
+                                        </ports>
+                                        <wait>
+                                            <http>
+                                                <!--suppress UnresolvedMavenProperty -->
+                                                <url>http://localhost:${it.app.port}/actuator/health</url>
+                                                <method>GET</method> <status>200</status>
+                                            </http>
+                                            <time>60000</time>
+                                        </wait>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- local & Github artefacts repositories -->
+        <profile>
+            <id>nexus</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>local-nexus</id>
+                    <url>http://localhost:8081/repository/nexus-snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>local-nexus</id>
+                    <url>http://localhost:8081/repository/nexus-releases/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>github</id>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Packages</name>
+                    <url>https://maven.pkg.github.com/megmost-stack/spring-boot-docker</url>
+                </repository>
+            </distributionManagement>
+            <activation><activeByDefault>true</activeByDefault></activation>
+        </profile>
+    </profiles>
 </project>

@@ -1,0 +1,20 @@
+-- BEISPIELDATEN (Damit du sofort etwas siehst)
+INSERT INTO authors (id, firstname, lastname, image_url) VALUES (1, 'John', 'Thompson', 'instructor_jt.jpg');
+
+INSERT INTO categories (category_id, name) VALUES (1, 'Spring Introduction'), (2, 'Spring Core'), (3, 'Spring Boot'), (4, 'Thymeleaf'), (5, 'G.E.A.P');
+
+INSERT INTO products (product_id, name, subtitle, description, price, product_author, image_url)
+VALUES (1, 'Introduction to Spring', 'Start Learning Spring!', 'Lerne Spring von Profis', 49.99, 1, 'SpringIntroThumb.png'),
+(2, 'Spring Core Ultimate', 'Ultimate Bundle of Spring Core!', 'Lerne Spring Core von Profis', 199.99, 1, 'SpringCoreUltimateThumb.png'),
+(3, 'Thymeleaf', 'Thymeleaf and Spring!', 'Lerne Thymeleaf von Profis', 149.99, 1, 'ThymeleafThumb.png'),
+(4, 'Spring Core', 'Spring Core - mastering Spring!', 'Mastering Spring Core with Profis', 109.99, 1, 'SpringCoreThumb.png"'),
+(5, 'Spring Core Advanced', 'Advanced Spring Core!', 'Lerne Advanced Spring Core von Profis', 259.99, 1, 'SpringCoreAdvancedThumb.png'),
+(6, 'Spring Core Dev-Ops', 'Deploying Spring in the Enterprise and the cloud!', 'eploying Spring in the Enterprise and the cloud like Profis', 579.99, 1, 'SpringCoreDevOpsThumb.png');
+
+INSERT INTO product_categories (product_id, category_id)
+VALUES (1, 1), (1, 3),
+(2, 2), (2, 3),
+(3, 4),
+(4, 2), (4, 3),
+(5, 2), (5, 3),
+(6, 3), (6, 5);
