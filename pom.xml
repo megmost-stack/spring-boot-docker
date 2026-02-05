@@ -253,9 +253,6 @@
                             <name>${docker.image.prefix}/${docker.name}</name>
                             <build>
                                 <from>eclipse-temurin:21-jre</from>
-                                <platforms>
-                                    <platform>linux/amd64</platform>
-                                </platforms>
                                 <assembly>
                                     <descriptorRef>artifact</descriptorRef>
                                 </assembly>
