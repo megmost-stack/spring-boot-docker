@@ -239,7 +239,7 @@
                                     <POSTGRES_USER>admin</POSTGRES_USER>
                                     <POSTGRES_PASSWORD>${it.db.password}</POSTGRES_PASSWORD>
                                     <POSTGRES_DB>springuru</POSTGRES_DB>
-									<POSTGRES_HOST_AUTH_METHOD>scram-sha-256</POSTGRES_HOST_AUTH_METHOD>
+									<POSTGRES_HOST_AUTH_METHOD>trust</POSTGRES_HOST_AUTH_METHOD>
                                 </env>
                                 <ports>
                                     <port>it.db.port:5432</port>
