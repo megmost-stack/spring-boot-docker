@@ -1,0 +1,40 @@
+name: Maven Release and Docker Push
+
+on:
+  workflow_dispatch: # Ermöglicht manuelles Starten des Release-Prozesses
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Wichtig für das Release-Plugin (Git-History)
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          server-id: docker.io # ID für Docker Hub Credentials in der settings.xml
+          server-username: DOCKER_USERNAME
+          server-password: DOCKER_PASSWORD
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+
+      - name: Prepare and Perform Release
+        env:
+          # Hier ziehen wir die Secrets aus GitHub und geben sie Maven mit
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+          # Passwort für die Integrationstests (IT)
+          IT_DB_PASSWORD: ${{ secrets.IT_DB_PASSWORD }}
+        run: |
+          mvn -B release:prepare release:perform \
+            -Darguments="-Dit.db.password=$IT_DB_PASSWORD -Ddocker.push.registry=docker.io" \
+            -Ddocker.username=$DOCKER_USERNAME \
+            -Ddocker.password=$DOCKER_PASSWORD
