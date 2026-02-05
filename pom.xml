@@ -239,13 +239,14 @@
                                     <POSTGRES_USER>admin</POSTGRES_USER>
                                     <POSTGRES_PASSWORD>${it.db.password}</POSTGRES_PASSWORD>
                                     <POSTGRES_DB>springuru</POSTGRES_DB>
+									<POSTGRES_HOST_AUTH_METHOD>scram-sha-256</POSTGRES_HOST_AUTH_METHOD>
                                 </env>
                                 <ports>
-                                    <port>5432:5432</port>
+                                    <port>it.db.port:5432</port>
                                 </ports>
                                 <wait>
+									<time>30000</time>
                                     <log>database system is ready to accept connections</log>
-                                    <time>20000</time>
                                 </wait>
                             </run>
                         </image>
