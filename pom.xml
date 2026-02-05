@@ -52,6 +52,10 @@
             <id>local-nexus</id>
             <url>http://localhost:8081/repository/mome-mvn-snapshots/</url>
         </snapshotRepository>
+		<repository>
+		    <id>github</id>
+		    <url>https://maven.pkg.github.com/megmost-stack/spring-boot-docker</url>
+   		</repository>
     </distributionManagement>
 
 	<dependencies>
