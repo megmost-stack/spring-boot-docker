@@ -28,10 +28,10 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <surefire.version>3.5.2</surefire.version>
         <junit.version>5.11.4</junit.version>
-
         <docker.image.prefix>megmus</docker.image.prefix>
         <docker.name>springbootdocker</docker.name>
         <docker.push.tags>true</docker.push.tags>
+        <it.db.password>nimda</it.db.password>
         <!-- Failsafe default values -->
         <it.db.port>5432</it.db.port>
         <it.app.port>8080</it.app.port>
@@ -237,17 +237,12 @@
                             <run>
                                 <env>
                                     <POSTGRES_USER>admin</POSTGRES_USER>
-                                    <POSTGRES_PASSWORD>nimda</POSTGRES_PASSWORD>
+                                    <POSTGRES_PASSWORD>${it.db.password}</POSTGRES_PASSWORD>
                                     <POSTGRES_DB>springuru</POSTGRES_DB>
                                 </env>
                                 <ports>
                                     <port>5432:5432</port>
                                 </ports>
-                                <!--volumes>
-                                    <bind>
-                                        <volume>${project.basedir}/src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql</volume>
-                                    </bind>
-                                </volumes-->
                                 <wait>
                                     <log>database system is ready to accept connections</log>
                                     <time>20000</time>
@@ -258,6 +253,9 @@
                             <name>${docker.image.prefix}/${docker.name}</name>
                             <build>
                                 <from>eclipse-temurin:21-jre</from>
+                                <platforms>
+                                    <platform>linux/amd64</platform>
+                                </platforms>
                                 <assembly>
                                     <descriptorRef>artifact</descriptorRef>
                                 </assembly>
