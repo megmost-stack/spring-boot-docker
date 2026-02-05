@@ -8,7 +8,6 @@ jobs:
     name: Perform Release
     runs-on: ubuntu-latest
     
-    # WICHTIG: Erlaubt Maven das Hochladen von Paketen und das Erstellen von Tags
     permissions:
       contents: write
       packages: write
@@ -17,17 +16,23 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Holt die gesamte Historie für das Tagging
+          fetch-depth: 0
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-          # Erstellt die settings.xml, damit Maven das GITHUB_TOKEN für die ID "github" nutzt
           server-id: github 
           server-username: GITHUB_ACTOR
           server-password: GITHUB_TOKEN
+
+      # NEU: Hier meldet sich GitHub bei Docker Hub an
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
       - name: Configure Git User
         run: |
@@ -35,8 +40,8 @@ jobs:
           git config --global user.name "GitHub Action"
 
       - name: Execute Maven Release
-        # -B für Batch-Mode (keine interaktiven Fragen)
-        # -Darguments gibt das DB-Passwort an die Integrationstests weiter
+        # -Pgithub aktiviert dein GitHub Profil
+        # -Dit.db.password sorgt dafür, dass die Tests gegen die DB laufen
         run: mvn -B release:prepare release:perform -Darguments="-Pgithub -Dit.db.password=nimda"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
