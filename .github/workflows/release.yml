@@ -37,6 +37,6 @@ jobs:
       - name: Execute Maven Release
         # -B für Batch-Mode (keine interaktiven Fragen)
         # -Darguments gibt das DB-Passwort an die Integrationstests weiter
-        run: mvn -B release:prepare release:perform -Darguments="-Dit.db.password=nimda"
+        run: mvn -B release:prepare release:perform -Darguments="-Pgithub -Dit.db.password=nimda"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
