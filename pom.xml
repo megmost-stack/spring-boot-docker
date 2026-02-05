@@ -40,7 +40,7 @@
     <scm>
         <developerConnection>scm:git:https://github.com/megmost-stack/spring-boot-docker.git</developerConnection>
         <url>https://github.com/megmost-stack/spring-boot-docker.git</url>
-        <tag>HEAD</tag>
+        <tag>spring-boot-docker-1.0.1</tag>
     </scm>
 
     <distributionManagement>
@@ -85,12 +85,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-
-        <!--dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency-->
 
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -231,7 +225,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <dockerHost>unix:///var/run/docker.sock</dockerHost>
+                    <dockerHost>unix:///Users/mostaphamegaiz/.docker/run/docker.sock</dockerHost>
                     <verbose>true</verbose>
                     <!-- log-settings -->
                     <useColor>true</useColor>
