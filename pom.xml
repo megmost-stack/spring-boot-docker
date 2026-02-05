@@ -361,11 +361,11 @@
             <distributionManagement>
                 <snapshotRepository>
                     <id>local-nexus</id>
-                    <url>http://localhost:8081/repository/nexus-snapshots</url>
+                    <url>http://localhost:8081/repository/mome-mvn-snapshots</url>
                 </snapshotRepository>
                 <repository>
                     <id>local-nexus</id>
-                    <url>http://localhost:8081/repository/nexus-releases/</url>
+                    <url>http://localhost:8081/repository/mome-mvn-releases/</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>

@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_DB: springuru
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - spring-net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  app:
+    image: megmus/springbootdocker:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/springuru
+      - SPRING_DATASOURCE_USERNAME=admin
+      # Dieser Import-Befehl sagt Spring: Schau in den Secret-Ordner!
+      - SPRING_CONFIG_IMPORT=optional:configtree:/run/secrets/
+      # Spring sucht nun nach einer Datei namens 'postgres_password' im Ordner
+      # und macht daraus die Property 'postgres.password'
+      - SPRING_DATASOURCE_PASSWORD=${postgres_password}
+    secrets:
+      - postgres_password
+    networks:
+      - spring-net
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+networks:
+  spring-net:
+    driver: overlay
+
+secrets:
+  postgres_password:
+    external: true
+
+volumes:
+  db_data:

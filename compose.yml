@@ -8,8 +8,6 @@ services:
       POSTGRES_DB: springuru
     ports:
       - "5432:5432"
-    volumes:
-      - ./src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d springuru"]
       interval: 5s
@@ -27,3 +25,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/springuru
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=nimda
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
